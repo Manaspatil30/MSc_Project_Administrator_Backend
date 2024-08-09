@@ -7,8 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +18,7 @@ public class ProjectService {
 
     private final ProjectRepository repository;
     private final UserRepository userRepository;
+    private final TagRepository tagRepository;
 
     public Project createProject(ProjectRequest request){
         //Get Supervisor
@@ -52,7 +55,14 @@ public class ProjectService {
         project.setSuitableFor(request.getSuitableFor());
         project.setQuota(request.getQuota());
         project.setReference(request.getReference());
-        project.setTags(request.getTags());
+
+        //Set Tags
+        Set<Tag> tags = new HashSet<>();
+        for (String tagName : request.getTags()){
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() -> tagRepository.save(new Tag(tagName)));
+            tags.add(tag);
+        }
 
         //Set Questions
         List<ProjectQuestion> questions = request.getQuestions();
