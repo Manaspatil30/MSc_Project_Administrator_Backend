@@ -44,4 +44,6 @@ public class UserService {
         return repository.findAllById(ids);
     }
 
+    public List<User> getAllSupervisors(Role role) {return repository.findByRole(role);}
+
 }

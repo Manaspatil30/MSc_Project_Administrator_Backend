@@ -36,4 +36,9 @@ public class UserController {
     public ResponseEntity<List<User>> getAllUsersById(@RequestParam List<Integer> id, @AuthenticationPrincipal User user){
         return ResponseEntity.ok(service.getUsersByIds(id));
    }
+
+   @GetMapping("/supervisor")
+    public ResponseEntity<List<User>> getSupervisors(@RequestParam Role role) {
+        return  ResponseEntity.ok(service.getAllSupervisors(role));
+   }
 }
