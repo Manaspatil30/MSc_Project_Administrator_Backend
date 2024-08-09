@@ -40,9 +40,13 @@ public class Project {
     @JoinColumn(name = "supervisor_id", nullable = false)
     private User supervisor;
 
-    @ManyToOne
-    @JoinColumn(name = "associate_supervisor_id")
-    private User associateSupervisor;
+    @ManyToMany
+    @JoinTable(
+            name = "project_associate_supervisors",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> associateSupervisors = new HashSet<>();
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

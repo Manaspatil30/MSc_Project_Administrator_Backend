@@ -29,13 +29,13 @@ public class ProjectService {
         User supervisor = optionalSupervisor.get();
 
         //Get associateSupervisor
-        User associateSupervisor = null;
-        if(request.getAssociateSupervisor() != null) {
-            Optional<User> optionalAssociateSupervisor = userRepository.findById(request.getAssociateSupervisor());
-            if(optionalAssociateSupervisor.isPresent()){
-                associateSupervisor = optionalAssociateSupervisor.get();
-            }
-        }
+//        User associateSupervisor = null;
+//        if(request.getAssociateSupervisor() != null) {
+//            Optional<User> optionalAssociateSupervisor = userRepository.findById(request.getAssociateSupervisor());
+//            if(optionalAssociateSupervisor.isPresent()){
+//                associateSupervisor = optionalAssociateSupervisor.get();
+//            }
+//        }
 
         //Generate Project Id based on supervisors initials and sequence number
         String supervisorInitials = supervisor.getFirstname().substring(0,1) + supervisor.getLastname().substring(0,1);
@@ -47,7 +47,6 @@ public class ProjectService {
         project.setSupProjectId(supProjectId);
         project.setTitle(request.getTitle());
         project.setSupervisor(supervisor);
-        project.setAssociateSupervisor(associateSupervisor);
         project.setProgram(request.getProgram());
         project.setStatus(request.getStatus());
         project.setDescription(request.getDescription());
@@ -56,6 +55,23 @@ public class ProjectService {
         project.setQuota(request.getQuota());
         project.setReference(request.getReference());
 
+        // Handle multiple associate supervisors
+//        Set<User> associateSupervisors = new HashSet<>();
+//        if (request.getAssociateSupervisorIds() != null) {
+//            for (Integer supervisorId : request.getAssociateSupervisorIds()) {
+//                User associateSupervisor = userRepository.findById(supervisorId)
+//                        .orElseThrow(() -> new RuntimeException("Associate Supervisor not found"));
+//                associateSupervisors.add(associateSupervisor);
+//            }
+//        }
+//        project.setAssociateSupervisors(associateSupervisors);
+
+        // Handle multiple associate supervisors using the new method
+        if (request.getAssociateSupervisorIds() != null && !request.getAssociateSupervisorIds().isEmpty()) {
+            List<User> associateSupervisors = userRepository.findAllByUserIdIn(request.getAssociateSupervisorIds());
+            project.setAssociateSupervisors(new HashSet<>(associateSupervisors));
+        }
+
         //Set Tags
         Set<Tag> tags = new HashSet<>();
         for (String tagName : request.getTags()){
@@ -63,6 +79,7 @@ public class ProjectService {
                     .orElseGet(() -> tagRepository.save(new Tag(tagName)));
             tags.add(tag);
         }
+        project.setTags(tags);
 
         //Set Questions
         List<ProjectQuestion> questions = request.getQuestions();

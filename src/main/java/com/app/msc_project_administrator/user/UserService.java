@@ -41,7 +41,7 @@ public class UserService {
     }
 
     public List<User> getUsersByIds(List<Integer> ids){
-        return repository.findAllById(ids);
+        return repository.findAllByUserIdIn(ids);
     }
 
     public List<User> getAllSupervisors(Role role) {return repository.findByRole(role);}

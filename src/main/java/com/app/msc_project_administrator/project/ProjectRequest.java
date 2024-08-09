@@ -17,7 +17,7 @@ public class ProjectRequest {
     private String title;
     private String description;
     private Integer supervisor;
-    private Integer associateSupervisor;
+    private List<Integer> associateSupervisorIds;
     private String program;
     private Status status;
     private List<ProjectQuestion> questions;
