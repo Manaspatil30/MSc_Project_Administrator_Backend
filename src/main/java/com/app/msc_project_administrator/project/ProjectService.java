@@ -1,6 +1,7 @@
 package com.app.msc_project_administrator.project;
 
 import com.app.msc_project_administrator.projectQuestions.ProjectQuestion;
+import com.app.msc_project_administrator.user.SupervisorDTO;
 import com.app.msc_project_administrator.user.User;
 import com.app.msc_project_administrator.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -101,5 +102,33 @@ public class ProjectService {
 
     public List<Project> getProjectBySupervisor(User supervisor){
         return repository.findAllBySupervisor(supervisor);
+    }
+
+    public ProjectDTO getAssignedProject(Integer studentId) {
+        Optional<User> student = userRepository.findById(studentId);
+        if (student.isPresent()) {
+            Project assignedProject = student.get().getAssignedProject();
+            if (assignedProject != null) {
+                SupervisorDTO supervisorDTO = new SupervisorDTO(
+                        assignedProject.getSupervisor().getUserId(),
+                        assignedProject.getSupervisor().getFirstname(),
+                        assignedProject.getSupervisor().getLastname(),
+                        assignedProject.getSupervisor().getEmail()
+                );
+
+                return new ProjectDTO(
+                        assignedProject.getProjectId(),
+                        assignedProject.getSupProjectId(),
+                        assignedProject.getTitle(),
+                        assignedProject.getDescription(),
+                        assignedProject.getStatus(),
+                        supervisorDTO
+                );
+            } else {
+                throw new RuntimeException("No project assigned to this student.");
+            }
+        } else {
+            throw new RuntimeException("Student not found.");
+        }
     }
 }

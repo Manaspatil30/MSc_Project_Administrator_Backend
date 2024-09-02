@@ -1,6 +1,7 @@
 package com.app.msc_project_administrator.user;
 
 
+import com.app.msc_project_administrator.project.Project;
 import jakarta.persistence.*;
 
 import java.util.Collection;
@@ -31,6 +32,10 @@ public class User implements UserDetails {
 
   @Enumerated(EnumType.STRING)
   private Role role;
+
+  @ManyToOne
+  @JoinColumn(name = "assigned_project_id")
+  private Project assignedProject;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

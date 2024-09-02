@@ -32,4 +32,20 @@ public class StudentChoice {
             inverseJoinColumns = @JoinColumn(name = "project_id")
     )
     private List<Project> projects;
+
+    @ElementCollection
+    @CollectionTable(name = "student_choice_preference", joinColumns = @JoinColumn(name = "student_choice_choice_id"))
+    @Column(name = "preferences")
+    private List<Integer> preferences;
+
+    @PrePersist
+    @PreUpdate
+    private void validateChoices(){
+        if (projects.size() > 5) {
+            throw new IllegalArgumentException("You can select a maximum of 5 projects");
+        }
+        if (projects.size() != preferences.size()) {
+            throw new IllegalArgumentException("Projects and preferences must have the same size");
+        }
+    }
 }

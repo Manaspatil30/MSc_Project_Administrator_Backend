@@ -1,5 +1,6 @@
 package com.app.msc_project_administrator.user;
 
+import com.app.msc_project_administrator.project.ProjectDTO;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,5 +46,27 @@ public class UserService {
     }
 
     public List<User> getAllSupervisors(Role role) {return repository.findByRole(role);}
+
+    public UserDTO mapToUserDTO(User user) {
+        ProjectDTO projectDTO = null;
+        if (user.getAssignedProject() != null) {
+            projectDTO = new ProjectDTO(
+                    user.getAssignedProject().getProjectId(),
+                    user.getAssignedProject().getSupProjectId(),
+                    user.getAssignedProject().getTitle(),
+                    user.getAssignedProject().getDescription(),
+                    user.getAssignedProject().getStatus(),
+                    null // We exclude nested supervisor and other details
+            );
+        }
+
+        return new UserDTO(
+                user.getUserId(),
+                user.getFirstname(),
+                user.getLastname(),
+                user.getEmail(),
+                projectDTO
+        );
+    }
 
 }

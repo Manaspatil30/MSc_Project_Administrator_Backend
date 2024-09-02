@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +19,8 @@ public class ProjectController {
     @Autowired
     UserRepository userRepository;
 
-    private final ProjectService service;
+    @Autowired
+    private ProjectService service;
 
     @PostMapping("/create")
     public ResponseEntity<?> save(@RequestBody ProjectRequest request){
@@ -45,5 +47,20 @@ public class ProjectController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Project>> getProjectsBySupervisor(@RequestParam User supervisor){
         return ResponseEntity.ok(service.getProjectBySupervisor(supervisor));
+    }
+
+    @GetMapping("/assigned-project")
+    public ResponseEntity<?> getAssignedProject(Principal principal) {
+        Optional<User> student = userRepository.findByEmail(principal.getName());
+        if (student.isPresent()) {
+            try {
+                ProjectDTO assignedProject = service.getAssignedProject(student.get().getUserId());
+                return ResponseEntity.ok(assignedProject);
+            } catch (RuntimeException e) {
+                return ResponseEntity.badRequest().body(e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(404).body("Student not found");
+        }
     }
 }
