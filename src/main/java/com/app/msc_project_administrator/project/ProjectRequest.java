@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -18,7 +19,7 @@ public class ProjectRequest {
     private String description;
     private Long supervisor;
     private List<Integer> associateSupervisorIds;
-    private String program;
+    private Set<Long> programeIds;
     private Status status;
     private List<ProjectQuestion> questions;
 

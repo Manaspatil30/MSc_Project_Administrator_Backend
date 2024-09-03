@@ -59,6 +59,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/v1/projects").hasAnyRole(MOD_OWNER.name(), ACADEMIC.name(), STUDENT.name())
                                 .requestMatchers("/api/v1/projects/create").hasAnyRole(ACADEMIC.name())
                                 .requestMatchers("/api/student-choices/**").hasAnyRole(STUDENT.name(), MOD_OWNER.name())
+                                .requestMatchers("/api/v1/programs/**").hasAnyRole(MOD_OWNER.name(), ACADEMIC.name())
 //                                .requestMatchers("/api/v1/projects").hasAnyRole(SUPERVISOR.name())
                                 .anyRequest()
                                 .authenticated()

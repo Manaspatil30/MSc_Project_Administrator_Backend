@@ -1,5 +1,6 @@
 package com.app.msc_project_administrator.project;
 
+import com.app.msc_project_administrator.programe.Programe;
 import com.app.msc_project_administrator.projectQuestions.ProjectQuestion;
 import com.app.msc_project_administrator.studentChoices.StudentChoice;
 import com.app.msc_project_administrator.user.User;
@@ -55,7 +56,13 @@ public class Project {
     @ManyToMany(mappedBy = "projects")
     private List<StudentChoice> studentChoices;
 
-    private String program;
+    @ManyToMany
+    @JoinTable(
+            name = "project_programe",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "program_id")
+    )
+    private Set<Programe> programe;
 
     private String reference;
     private String prerequisite;

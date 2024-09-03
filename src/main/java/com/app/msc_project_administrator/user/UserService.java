@@ -67,7 +67,8 @@ public class UserService {
                     user.getAssignedProject().getTitle(),
                     user.getAssignedProject().getDescription(),
                     user.getAssignedProject().getStatus(),
-                    supervisorDTO
+                    supervisorDTO,
+                    user.getAssignedProject().getPrograme()
             );
         }
 

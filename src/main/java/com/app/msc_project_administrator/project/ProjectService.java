@@ -1,5 +1,7 @@
 package com.app.msc_project_administrator.project;
 
+import com.app.msc_project_administrator.programe.Programe;
+import com.app.msc_project_administrator.programe.ProgrameRepository;
 import com.app.msc_project_administrator.projectQuestions.ProjectQuestion;
 import com.app.msc_project_administrator.user.SupervisorDTO;
 import com.app.msc_project_administrator.user.User;
@@ -12,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +23,10 @@ public class ProjectService {
     private final ProjectRepository repository;
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
+    private final ProgrameRepository programeRepository;
 
     public Project createProject(ProjectRequest request){
+        Set<Programe> programs = new HashSet<>(programeRepository.findAllById(request.getProgrameIds()));
         //Get Supervisor
         Optional<User> optionalSupervisor = userRepository.findById(request.getSupervisor());
         if (!optionalSupervisor.isPresent()) {
@@ -48,7 +53,7 @@ public class ProjectService {
         project.setSupProjectId(supProjectId);
         project.setTitle(request.getTitle());
         project.setSupervisor(supervisor);
-        project.setProgram(request.getProgram());
+        project.setPrograme(programs);
         project.setStatus(request.getStatus());
         project.setDescription(request.getDescription());
         project.setPrerequisite(request.getPrerequisite());
@@ -94,7 +99,14 @@ public class ProjectService {
         return repository.save(project);
     }
 
-    public List<Project> findAll(){ return repository.findAll();}
+
+
+    public List<ProjectDTO> findAll(){
+        List<Project> projects = repository.findAll();
+        return projects.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
     public Project getProjectById(Long projectId){
         return repository.findProjectByProjectId(projectId);
@@ -122,7 +134,8 @@ public class ProjectService {
                         assignedProject.getTitle(),
                         assignedProject.getDescription(),
                         assignedProject.getStatus(),
-                        supervisorDTO
+                        supervisorDTO,
+                        assignedProject.getPrograme()
                 );
             } else {
                 throw new RuntimeException("No project assigned to this student.");
@@ -130,5 +143,28 @@ public class ProjectService {
         } else {
             throw new RuntimeException("Student not found.");
         }
+    }
+
+    private ProjectDTO convertToDTO(Project project) {
+        SupervisorDTO supervisorDTO = null;
+        if (project.getSupervisor() != null) {
+            supervisorDTO = new SupervisorDTO(
+                    project.getSupervisor().getUserId(),
+                    project.getSupervisor().getFirstname(),
+                    project.getSupervisor().getLastname(),
+                    project.getSupervisor().getEmail()
+            );
+        }
+
+        return new ProjectDTO(
+                project.getProjectId(),
+                project.getSupProjectId(),
+                project.getTitle(),
+                project.getDescription(),
+                project.getStatus(),
+                supervisorDTO,
+                // Include programs in the DTO
+                project.getPrograme()
+        );
     }
 }

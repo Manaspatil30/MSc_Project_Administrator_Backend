@@ -35,7 +35,7 @@ public class ProjectController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Project>> getAllProjects(){
+    public ResponseEntity<List<ProjectDTO>> getAllProjects(){
         return ResponseEntity.ok(service.findAll());
     }
 
