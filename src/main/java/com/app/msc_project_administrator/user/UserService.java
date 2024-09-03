@@ -50,13 +50,24 @@ public class UserService {
     public UserDTO mapToUserDTO(User user) {
         ProjectDTO projectDTO = null;
         if (user.getAssignedProject() != null) {
+        SupervisorDTO supervisorDTO = null;
+        if (user.getAssignedProject().getSupervisor() != null) {
+            supervisorDTO = new SupervisorDTO(
+                    user.getAssignedProject().getSupervisor().getUserId(),
+                    user.getAssignedProject().getSupervisor().getFirstname(),
+                    user.getAssignedProject().getSupervisor().getLastname(),
+                    user.getAssignedProject().getSupervisor().getEmail()
+            );
+        }
+
+
             projectDTO = new ProjectDTO(
                     user.getAssignedProject().getProjectId(),
                     user.getAssignedProject().getSupProjectId(),
                     user.getAssignedProject().getTitle(),
                     user.getAssignedProject().getDescription(),
                     user.getAssignedProject().getStatus(),
-                    null // We exclude nested supervisor and other details
+                    supervisorDTO
             );
         }
 
@@ -65,6 +76,7 @@ public class UserService {
                 user.getFirstname(),
                 user.getLastname(),
                 user.getEmail(),
+                user.getRole(),
                 projectDTO
         );
     }

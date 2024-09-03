@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SupervisorDTO {
-    private Integer userId;
+    private Long userId;
     private String firstname;
     private String lastname;
     private String email;

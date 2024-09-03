@@ -104,7 +104,7 @@ public class ProjectService {
         return repository.findAllBySupervisor(supervisor);
     }
 
-    public ProjectDTO getAssignedProject(Integer studentId) {
+    public ProjectDTO getAssignedProject(Long studentId) {
         Optional<User> student = userRepository.findById(studentId);
         if (student.isPresent()) {
             Project assignedProject = student.get().getAssignedProject();

@@ -43,4 +43,10 @@ public class StudentChoiceController {
         List<Map<String, Object>> allPreferences = studentChoiceService.getAllStudentProjectPreferences();
         return ResponseEntity.ok(allPreferences);
     }
+
+    @GetMapping("/project-or-choices/{studentId}")
+    public ResponseEntity<?> getProjectOrChoices(@PathVariable Long studentId) {
+        Object response = studentChoiceService.getProjectOrChoices(studentId);
+        return ResponseEntity.ok(response);
+    }
 }
