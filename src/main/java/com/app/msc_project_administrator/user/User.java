@@ -33,10 +33,6 @@ public class User implements UserDetails {
   @Enumerated(EnumType.STRING)
   private Role role;
 
-  @ManyToOne
-  @JoinColumn(name = "assigned_project_id")
-  private Project assignedProject;
-
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return role.getAuthorities();

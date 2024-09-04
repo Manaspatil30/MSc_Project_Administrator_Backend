@@ -1,6 +1,9 @@
 package com.app.msc_project_administrator.user;
 
+import com.app.msc_project_administrator.project.Project;
 import com.app.msc_project_administrator.project.ProjectDTO;
+import com.app.msc_project_administrator.userProjectAssign.UserProjectAssignment;
+import com.app.msc_project_administrator.userProjectAssign.UserProjectAssignmentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +20,7 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
+    private final UserProjectAssignmentRepository userProjectAssignmentRepository;
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -48,27 +52,32 @@ public class UserService {
     public List<User> getAllSupervisors(Role role) {return repository.findByRole(role);}
 
     public UserDTO mapToUserDTO(User user) {
+
+        Optional<UserProjectAssignment> assignment = userProjectAssignmentRepository.findByUser_UserId(user.getUserId());
+
         ProjectDTO projectDTO = null;
-        if (user.getAssignedProject() != null) {
+        if (assignment.isPresent()) {
+            Project assignedProject = assignment.get().getProject();
+
         SupervisorDTO supervisorDTO = null;
-        if (user.getAssignedProject().getSupervisor() != null) {
+        if (assignedProject.getSupervisor() != null) {
             supervisorDTO = new SupervisorDTO(
-                    user.getAssignedProject().getSupervisor().getUserId(),
-                    user.getAssignedProject().getSupervisor().getFirstname(),
-                    user.getAssignedProject().getSupervisor().getLastname(),
-                    user.getAssignedProject().getSupervisor().getEmail()
+                    assignedProject.getSupervisor().getUserId(),
+                    assignedProject.getSupervisor().getFirstname(),
+                    assignedProject.getSupervisor().getLastname(),
+                    assignedProject.getSupervisor().getEmail()
             );
         }
 
 
             projectDTO = new ProjectDTO(
-                    user.getAssignedProject().getProjectId(),
-                    user.getAssignedProject().getSupProjectId(),
-                    user.getAssignedProject().getTitle(),
-                    user.getAssignedProject().getDescription(),
-                    user.getAssignedProject().getStatus(),
+                    assignedProject.getProjectId(),
+                    assignedProject.getSupProjectId(),
+                    assignedProject.getTitle(),
+                    assignedProject.getDescription(),
+                    assignedProject.getStatus(),
                     supervisorDTO,
-                    user.getAssignedProject().getPrograme()
+                    assignedProject.getPrograme()
             );
         }
 
