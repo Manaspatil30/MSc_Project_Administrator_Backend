@@ -6,6 +6,8 @@ import com.app.msc_project_administrator.projectQuestions.ProjectQuestion;
 import com.app.msc_project_administrator.user.SupervisorDTO;
 import com.app.msc_project_administrator.user.User;
 import com.app.msc_project_administrator.user.UserRepository;
+import com.app.msc_project_administrator.userProjectAssign.UserProjectAssignment;
+import com.app.msc_project_administrator.userProjectAssign.UserProjectAssignmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ public class ProjectService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final ProgrameRepository programeRepository;
+    private final UserProjectAssignmentRepository userProjectAssignmentRepository;
 
     public Project createProject(ProjectRequest request){
         Set<Programe> programs = new HashSet<>(programeRepository.findAllById(request.getProgrameIds()));
@@ -117,9 +120,9 @@ public class ProjectService {
     }
 
     public ProjectDTO getAssignedProject(Long studentId) {
-        Optional<User> student = userRepository.findById(studentId);
+        Optional<UserProjectAssignment> student = userProjectAssignmentRepository.findByUser_UserId(studentId);
         if (student.isPresent()) {
-            Project assignedProject = student.get().getAssignedProject();
+            Project assignedProject = student.get().getProject();
             if (assignedProject != null) {
                 SupervisorDTO supervisorDTO = new SupervisorDTO(
                         assignedProject.getSupervisor().getUserId(),
