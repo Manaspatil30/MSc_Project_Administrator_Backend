@@ -170,4 +170,10 @@ public class ProjectService {
                 project.getPrograme()
         );
     }
+
+    public List<TagDTO> getAllTags() {
+        return tagRepository.findAll().stream()
+                .map(tag -> new TagDTO(tag.getId(), tag.getName()))
+                .collect(Collectors.toList());
+    }
 }

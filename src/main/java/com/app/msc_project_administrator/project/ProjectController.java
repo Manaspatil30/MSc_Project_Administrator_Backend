@@ -4,6 +4,7 @@ import com.app.msc_project_administrator.user.User;
 import com.app.msc_project_administrator.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,5 +63,11 @@ public class ProjectController {
         } else {
             return ResponseEntity.status(404).body("Student not found");
         }
+    }
+
+    @GetMapping("/tags")
+    public ResponseEntity<List<TagDTO>> getAllTags() {
+        List<TagDTO> tags = service.getAllTags();
+        return new ResponseEntity<>(tags, HttpStatus.OK);
     }
 }

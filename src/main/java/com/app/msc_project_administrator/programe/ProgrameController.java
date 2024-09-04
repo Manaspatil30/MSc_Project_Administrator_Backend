@@ -23,7 +23,7 @@ public class ProgrameController {
         return ResponseEntity.ok(programService.getProgramById(id));
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Programe> createProgram(@RequestBody Programe program) {
         return ResponseEntity.ok(programService.createProgram(program));
     }
