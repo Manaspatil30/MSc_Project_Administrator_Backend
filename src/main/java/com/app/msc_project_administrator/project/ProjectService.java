@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -146,6 +143,51 @@ public class ProjectService {
         } else {
             throw new RuntimeException("Student not found.");
         }
+    }
+
+//    public List<ProjectDTO> filterProjects(String title, Long programId, String tagName, Long supervisorId) {
+//        List<Project> projects;
+//
+//        // Search by title
+//        if (title != null && !title.isEmpty()) {
+//            projects = repository.findByTitleContainingIgnoreCase(title);
+//        }
+//        // Filter by program
+//        else if (programId != null) {
+//            projects = repository.findByPrograme(programId);
+//        }
+//        // Filter by tag
+//        else if (tagName != null && !tagName.isEmpty()) {
+//            projects = repository.findByTag(tagName);
+//        }
+//        // Filter by supervisor
+//        else if (supervisorId != null) {
+//            User supervisor = userRepository.findById(supervisorId).orElseThrow(() -> new RuntimeException("Supervisor not found"));
+//            projects = repository.findBySupervisor(supervisor);
+//        } else {
+//            projects = repository.findAll();
+//        }
+//
+//        // Convert to DTOs and return
+//        return projects.stream().map(this::convertToDTO).collect(Collectors.toList());
+//    }
+
+    public List<ProjectDTO> filterProjects(String programIds, String tagNames, String supervisorName, String title) {
+        List<Long> programIdList = programIds != null ? Arrays.stream(programIds.split(","))
+                .map(Long::parseLong)
+                .collect(Collectors.toList()) : null;
+
+        List<String> tagNameList = tagNames != null ? Arrays.asList(tagNames.split(",")) : null;
+
+        List<Project> projects = repository.filterProjects(programIdList, tagNameList, supervisorName, title);
+
+        return projects.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    // Find all projects and return them sorted by supProjectId
+    public List<ProjectDTO> findAllSortedBySupProjectId() {
+        List<Project> projects = repository.findAllSortedBySupProjectId();
+        return projects.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     private ProjectDTO convertToDTO(Project project) {

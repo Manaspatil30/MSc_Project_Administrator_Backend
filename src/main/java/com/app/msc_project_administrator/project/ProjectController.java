@@ -35,9 +35,15 @@ public class ProjectController {
 //        return ResponseEntity.accepted().build();
     }
 
+//    @GetMapping
+//    public ResponseEntity<List<ProjectDTO>> getAllProjects(){
+//        return ResponseEntity.ok(service.findAll());
+//    }
+
     @GetMapping
-    public ResponseEntity<List<ProjectDTO>> getAllProjects(){
-        return ResponseEntity.ok(service.findAll());
+    public ResponseEntity<List<ProjectDTO>> getAllProjects() {
+        List<ProjectDTO> projects = service.findAllSortedBySupProjectId();
+        return ResponseEntity.ok(projects);
     }
 
     @GetMapping("/{projectId}")
@@ -69,5 +75,16 @@ public class ProjectController {
     public ResponseEntity<List<TagDTO>> getAllTags() {
         List<TagDTO> tags = service.getAllTags();
         return new ResponseEntity<>(tags, HttpStatus.OK);
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<ProjectDTO>> filterProjects(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String programIds,
+            @RequestParam(required = false) String tagName,
+            @RequestParam(required = false) String supervisorName
+    ) {
+        List<ProjectDTO> filteredProjects = service.filterProjects( programIds, tagName, supervisorName, title);
+        return ResponseEntity.ok(filteredProjects);
     }
 }
