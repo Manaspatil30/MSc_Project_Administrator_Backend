@@ -25,7 +25,7 @@ public class StudentChoiceController {
     public ResponseEntity<?> saveStudentChoice(Principal principal, @RequestBody StudentChoiceRequest studentChoiceRequest) {
         try {
             User student = userRepository.findByEmail(principal.getName()).orElseThrow();
-            studentChoiceService.saveStudentChoice(student, studentChoiceRequest.getProjectPreferences());
+            studentChoiceService.saveStudentChoice2(student, studentChoiceRequest.getProjectPreferences());
             return ResponseEntity.accepted().build();
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

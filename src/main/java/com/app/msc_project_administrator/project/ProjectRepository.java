@@ -18,7 +18,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "JOIN p.programe programs " +
             "JOIN p.tags tags " +
             "JOIN p.supervisor supervisor " +
-            "WHERE (:programIds IS NULL OR programs.id IN :programIds) " +
+            "WHERE (:programIds IS NULL OR programs.programId IN :programIds) " +
             "AND (:tagNames IS NULL OR tags.name IN :tagNames) " +
             "AND (:supervisorName IS NULL OR CONCAT(supervisor.firstname, ' ', supervisor.lastname) LIKE %:supervisorName%) " +
             "AND (:title IS NULL OR p.title LIKE %:title%) " +
