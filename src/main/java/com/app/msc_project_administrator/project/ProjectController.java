@@ -2,6 +2,7 @@ package com.app.msc_project_administrator.project;
 
 import com.app.msc_project_administrator.user.User;
 import com.app.msc_project_administrator.user.UserRepository;
+import com.app.msc_project_administrator.userProjectAssign.ProjectAssignmentRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,20 @@ public class ProjectController {
     public ResponseEntity<List<ProjectDTO>> getAllProjects() {
         List<ProjectDTO> projects = service.findAllSortedBySupProjectId();
         return ResponseEntity.ok(projects);
+    }
+
+    @PostMapping("/assign")
+    public ResponseEntity<String> assignProjectToStudent(@RequestBody ProjectAssignmentRequest assignmentRequest) {
+        try {
+            service.assignProjectToStudent(assignmentRequest.getStudentId(), assignmentRequest.getProjectId());
+            return ResponseEntity.ok("Project assigned successfully.");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while assigning the project.");
+        }
     }
 
     @GetMapping("/{projectId}")

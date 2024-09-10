@@ -145,6 +145,29 @@ public class ProjectService {
         }
     }
 
+    public void assignProjectToStudent(Long studentId, Long projectId) {
+        // Fetch student and project
+        User student = userRepository.findById(studentId)
+                .orElseThrow(() -> new IllegalArgumentException("Student not found"));
+
+        Project project = repository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("Project not found"));
+
+        // Check if student already has a project assigned
+        Optional<UserProjectAssignment> existingAssignment = userProjectAssignmentRepository.findByUser(student);
+        if (existingAssignment.isPresent()) {
+            throw new IllegalStateException("Student already has an assigned project.");
+        }
+
+        // Create new assignment
+        UserProjectAssignment assignment = new UserProjectAssignment();
+        assignment.setUser(student);
+        assignment.setProject(project);
+
+        // Save assignment
+        userProjectAssignmentRepository.save(assignment);
+    }
+
 //    public List<ProjectDTO> filterProjects(String title, Long programId, String tagName, Long supervisorId) {
 //        List<Project> projects;
 //
