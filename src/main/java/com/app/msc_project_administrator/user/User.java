@@ -2,10 +2,13 @@ package com.app.msc_project_administrator.user;
 
 
 import com.app.msc_project_administrator.project.Project;
+import com.app.msc_project_administrator.project.Tag;
 import jakarta.persistence.*;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,6 +32,13 @@ public class User implements UserDetails {
   private String lastname;
   private String email;
   private String password;
+
+  @ManyToMany
+  @JoinTable(
+          name = "supervisor_tags",
+          joinColumns = @JoinColumn(name = "supervisor_id"),
+          inverseJoinColumns = @JoinColumn(name = "tag_id"))
+  private Set<Tag> expertiseTags;  // Tags representing supervisor's expertise
 
   @Enumerated(EnumType.STRING)
   private Role role;

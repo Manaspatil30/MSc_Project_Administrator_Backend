@@ -213,7 +213,7 @@ public class ProjectService {
         return projects.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    private ProjectDTO convertToDTO(Project project) {
+    public ProjectDTO convertToDTO(Project project) {
         SupervisorDTO supervisorDTO = null;
         if (project.getSupervisor() != null) {
             supervisorDTO = new SupervisorDTO(
