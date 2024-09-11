@@ -40,6 +40,9 @@ public class User implements UserDetails {
           inverseJoinColumns = @JoinColumn(name = "tag_id"))
   private Set<Tag> expertiseTags;  // Tags representing supervisor's expertise
 
+  @OneToMany(mappedBy = "supervisor")
+  private Set<Project> projects;  // Projects supervised by the user
+
   @Enumerated(EnumType.STRING)
   private Role role;
 
