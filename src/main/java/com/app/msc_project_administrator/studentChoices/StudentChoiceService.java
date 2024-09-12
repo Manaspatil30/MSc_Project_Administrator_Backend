@@ -4,6 +4,7 @@ import com.app.msc_project_administrator.project.Project;
 import com.app.msc_project_administrator.project.ProjectDTO;
 import com.app.msc_project_administrator.project.ProjectRepository;
 import com.app.msc_project_administrator.project.ProjectService;
+import com.app.msc_project_administrator.user.Role;
 import com.app.msc_project_administrator.user.SupervisorDTO;
 import com.app.msc_project_administrator.user.User;
 import com.app.msc_project_administrator.user.UserRepository;
@@ -24,6 +25,9 @@ public class StudentChoiceService {
 
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private UserRepository userRepository;
 
 
     public void saveStudentChoice(User student, List<StudentChoiceRequest.ProjectPreference> projectPreferences) {
@@ -194,5 +198,59 @@ public class StudentChoiceService {
         } else {
             return choices; // Return the list of choices
         }
+    }
+
+    /**
+     * Fetch all student preferences and students who haven't submitted their preferences.
+     */
+    public Map<String, Object> getStudentPreferencesAndMissingSubmissions() {
+        // Fetch all students with the role STUDENT
+        List<User> allStudents = userRepository.findByRole(Role.STUDENT);
+
+        // Fetch all students who have submitted their preferences
+        List<StudentChoice> studentChoices = studentChoiceRepository.findAll();
+
+        // Extract students who have submitted preferences
+        List<User> studentsWithPreferences = studentChoices.stream()
+                .map(StudentChoice::getStudent)
+                .collect(Collectors.toList());
+
+        // Find students who haven't submitted preferences
+        List<User> studentsWithoutPreferences = allStudents.stream()
+                .filter(student -> !studentsWithPreferences.contains(student))
+                .collect(Collectors.toList());
+
+        // Prepare the response with projects and preferences combined
+        List<Map<String, Object>> choicesWithPreferences = studentChoices.stream()
+                .map(choice -> {
+                    Map<String, Object> choiceMap = new HashMap<>();
+                    choiceMap.put("student", choice.getStudent());
+
+                    // Combine projects with corresponding preferences
+                    List<Map<String, Object>> projectPreferences = new ArrayList<>();
+                    for (int i = 0; i < choice.getProjects().size(); i++) {
+                        Project project = choice.getProjects().get(i);
+                        int preference = choice.getPreferences().get(i);
+
+                        Map<String, Object> projectPrefMap = new HashMap<>();
+                        projectPrefMap.put("projectId", project.getProjectId());
+                        projectPrefMap.put("projectTitle", project.getTitle());
+                        projectPrefMap.put("preference", preference);
+
+                        projectPreferences.add(projectPrefMap);
+                    }
+                    choiceMap.put("projectPreferences", projectPreferences);
+
+                    return choiceMap;
+                })
+                .collect(Collectors.toList());
+
+        // Prepare the final response
+        Map<String, Object> response = new HashMap<>();
+        response.put("studentChoices", choicesWithPreferences); // All student preferences with project info
+        response.put("studentsWithoutPreferences", studentsWithoutPreferences); // Students who haven't submitted preferences
+        response.put("remainingCount", studentsWithoutPreferences.size()); // Count of students who haven't submitted
+
+        return response;
     }
 }

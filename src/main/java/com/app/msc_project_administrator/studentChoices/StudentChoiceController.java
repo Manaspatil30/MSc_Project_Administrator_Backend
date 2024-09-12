@@ -49,4 +49,10 @@ public class StudentChoiceController {
         Object response = studentChoiceService.getProjectOrChoices(studentId);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/mod-owner/preferences-status")
+    public ResponseEntity<Map<String, Object>> getStudentPreferencesStatus() {
+        Map<String, Object> response = studentChoiceService.getStudentPreferencesAndMissingSubmissions();
+        return ResponseEntity.ok(response);
+    }
 }
