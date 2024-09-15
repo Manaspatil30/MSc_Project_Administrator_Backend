@@ -2,10 +2,12 @@ package com.app.msc_project_administrator.user;
 
 import com.app.msc_project_administrator.project.Project;
 import com.app.msc_project_administrator.project.ProjectDTO;
+import com.app.msc_project_administrator.project.ProjectRepository;
 import com.app.msc_project_administrator.userProjectAssign.UserProjectAssignment;
 import com.app.msc_project_administrator.userProjectAssign.UserProjectAssignmentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +24,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
     private final UserProjectAssignmentRepository userProjectAssignmentRepository;
+    private final ProjectRepository projectRepository;
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -50,6 +54,43 @@ public class UserService {
     }
 
     public List<User> getAllSupervisors(Role role) {return repository.findByRole(role);}
+
+    public List<UserDTO> getStudentsBySupervisor(Long supervisorId) {
+        List<User> students = repository.findStudentsBySupervisorId(supervisorId);
+        return students.stream()
+                .map(this::mapToUserDTO)
+                .collect(Collectors.toList());
+    }
+
+
+
+    public List<UserDTO> getStudentsAndAssignedProjects(Long supervisorId) {
+        List<UserProjectAssignment> assignments = userProjectAssignmentRepository.findBySupervisorId(supervisorId);
+
+        return assignments.stream().map(assignment -> {
+            User student = assignment.getUser();
+            Project project = assignment.getProject();
+
+            // Map to UserDTO and include project details
+            UserDTO studentDTO = mapToUserDTO(student);
+            ProjectDTO projectDTO = mapToProjectDTO(project);
+            studentDTO.setAssignedProject(projectDTO);
+
+            return studentDTO;
+        }).collect(Collectors.toList());
+    }
+
+    private ProjectDTO mapToProjectDTO(Project project) {
+        return new ProjectDTO(
+                project.getProjectId(),
+                project.getSupProjectId(),
+                project.getTitle(),
+                project.getDescription(),
+                project.getStatus(),
+                null, // Add SupervisorDTO if needed
+                project.getPrograme() // assuming `getPrograme` gives related tags or programs
+        );
+    }
 
     public UserDTO mapToUserDTO(User user) {
 

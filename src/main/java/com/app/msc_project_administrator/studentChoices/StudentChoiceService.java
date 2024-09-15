@@ -92,9 +92,14 @@ public class StudentChoiceService {
 
     public List<ProjectPreferenceResponse> getStudentProjectPreferences(Long userId) {
         // Fetch the student choices based on the userId
-        StudentChoice studentChoice = studentChoiceRepository.findByStudentUserId(userId)
-                .orElseThrow(() -> new RuntimeException("No choices found for user: " + userId));
+        Optional<StudentChoice> optionalStudentChoice = studentChoiceRepository.findByStudentUserId(userId);
 
+        // If no choices found, return an empty list
+        if (!optionalStudentChoice.isPresent()) {
+            return Collections.emptyList();
+        }
+
+        StudentChoice studentChoice = optionalStudentChoice.get();
         // Map to ProjectPreferenceResponse
         return studentChoice.getProjects().stream().map(project -> {
             int preferenceIndex = studentChoice.getProjects().indexOf(project);

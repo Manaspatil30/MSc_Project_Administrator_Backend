@@ -32,4 +32,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @Query("SELECT DISTINCT u FROM User u WHERE u.role = 'ACADEMIC' AND NOT EXISTS (SELECT p FROM Project p JOIN p.tags t WHERE t IN :tags AND p.supervisor = u)")
   List<User> findAllSupervisorsExcludingTags(@Param("tags") Set<Tag> tags);
 
+  // Find all students assigned to a specific supervisor
+  @Query("SELECT u FROM User u JOIN u.projects p WHERE p.supervisor.userId = :supervisorId AND u.role = 'STUDENT'")
+  List<User> findStudentsBySupervisorId(@Param("supervisorId") Long supervisorId);
+
 }

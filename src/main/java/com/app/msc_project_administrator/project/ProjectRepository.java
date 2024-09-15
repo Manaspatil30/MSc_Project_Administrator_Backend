@@ -10,6 +10,7 @@ import java.util.List;
 public interface ProjectRepository extends JpaRepository<Project, Long> {
     Project findProjectByProjectId(Long projectId);
 
+
     List<Project> findAllBySupervisor(User supervisor);
 
     long countBySupervisor(User supervisor);

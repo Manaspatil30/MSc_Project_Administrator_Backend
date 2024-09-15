@@ -41,4 +41,15 @@ public class UserController {
     public ResponseEntity<List<User>> getSupervisors(@RequestParam Role role) {
         return  ResponseEntity.ok(service.getAllSupervisors(role));
    }
+
+//    @GetMapping("/supervisor/{supervisorId}/students")
+//    public ResponseEntity<List<UserDTO>> getStudentsBySupervisor(@PathVariable Long supervisorId) {
+//        List<UserDTO> students = service.getStudentsBySupervisor(supervisorId);
+//        return ResponseEntity.ok(students);
+//    }
+
+    @GetMapping("/{supervisorId}/students")
+    public List<UserDTO> getStudentsAndAssignedProjects(@PathVariable Long supervisorId) {
+        return service.getStudentsAndAssignedProjects(supervisorId);
+    }
 }

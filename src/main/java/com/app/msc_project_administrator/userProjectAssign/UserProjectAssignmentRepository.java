@@ -2,6 +2,7 @@ package com.app.msc_project_administrator.userProjectAssign;
 
 import com.app.msc_project_administrator.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,4 +15,7 @@ public interface UserProjectAssignmentRepository extends JpaRepository<UserProje
 
     Optional<UserProjectAssignment> findByUser(User user);
 //    Optional<UserProjectAssignment> findByUserIdAndProjectId(Long userId, Long projectId);
+
+    @Query("SELECT a FROM UserProjectAssignment a WHERE a.project.supervisor.userId = :supervisorId")
+    List<UserProjectAssignment> findBySupervisorId(Long supervisorId);
 }
