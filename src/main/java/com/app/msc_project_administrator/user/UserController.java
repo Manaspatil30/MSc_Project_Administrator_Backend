@@ -37,6 +37,13 @@ public class UserController {
         return ResponseEntity.ok(service.getUsersByIds(id));
    }
 
+    @GetMapping("/profile")
+    public ResponseEntity<UserDTO> getProfile(@AuthenticationPrincipal User user) {
+        // Use the service to map the user entity to UserDTO
+        UserDTO userDTO = service.mapToUserDTO(user);
+        return ResponseEntity.ok(userDTO);
+    }
+
    @GetMapping("/supervisor")
     public ResponseEntity<List<User>> getSupervisors(@RequestParam Role role) {
         return  ResponseEntity.ok(service.getAllSupervisors(role));
