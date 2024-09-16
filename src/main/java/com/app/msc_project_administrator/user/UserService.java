@@ -3,6 +3,12 @@ package com.app.msc_project_administrator.user;
 import com.app.msc_project_administrator.project.Project;
 import com.app.msc_project_administrator.project.ProjectDTO;
 import com.app.msc_project_administrator.project.ProjectRepository;
+import com.app.msc_project_administrator.studentChoices.StudentChoice;
+import com.app.msc_project_administrator.studentChoices.StudentChoiceRepository;
+import com.app.msc_project_administrator.supervisorStudentPreference.ProjectWithRankedStudentsDTO;
+import com.app.msc_project_administrator.supervisorStudentPreference.RankedStudentDTO;
+import com.app.msc_project_administrator.supervisorStudentPreference.SupervisorStudentPreference;
+import com.app.msc_project_administrator.supervisorStudentPreference.SupervisorStudentPreferenceRepository;
 import com.app.msc_project_administrator.userProjectAssign.UserProjectAssignment;
 import com.app.msc_project_administrator.userProjectAssign.UserProjectAssignmentRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,8 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +30,8 @@ public class UserService {
     private final UserRepository repository;
     private final UserProjectAssignmentRepository userProjectAssignmentRepository;
     private final ProjectRepository projectRepository;
+    private final StudentChoiceRepository studentChoiceRepository;
+    private final SupervisorStudentPreferenceRepository preferenceRepository;
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -90,6 +97,37 @@ public class UserService {
                 null, // Add SupervisorDTO if needed
                 project.getPrograme() // assuming `getPrograme` gives related tags or programs
         );
+    }
+
+    public List<ProjectWithStudentsDTO> getStudentsForSupervisor(Long supervisorId) {
+        // Fetch projects by supervisor
+        List<Project> supervisorProjects = projectRepository.findAllBySupervisorUserId(supervisorId);
+
+        // Create a list to store the result
+        List<ProjectWithStudentsDTO> projectWithStudentsList = new ArrayList<>();
+
+        for (Project project : supervisorProjects) {
+            List<StudentChoice> choices = studentChoiceRepository.findByProjectsProjectId(project.getProjectId());
+
+            // Collect students who chose this project
+            List<UserDTO> studentDTOs = choices.stream()
+                    .map(choice -> mapToUserDTO(choice.getStudent()))
+                    .collect(Collectors.toList());
+
+            // Create a new DTO for the project with students
+            ProjectWithStudentsDTO projectWithStudentsDTO = new ProjectWithStudentsDTO();
+            projectWithStudentsDTO.setProjectId(project.getProjectId());
+            projectWithStudentsDTO.setSupProjectId(project.getSupProjectId());
+            projectWithStudentsDTO.setTitle(project.getTitle());
+            projectWithStudentsDTO.setDescription(project.getDescription());
+            projectWithStudentsDTO.setStatus(project.getStatus());
+            projectWithStudentsDTO.setStudents(studentDTOs);
+
+            // Add to the list
+            projectWithStudentsList.add(projectWithStudentsDTO);
+        }
+
+        return projectWithStudentsList;
     }
 
     public UserDTO mapToUserDTO(User user) {

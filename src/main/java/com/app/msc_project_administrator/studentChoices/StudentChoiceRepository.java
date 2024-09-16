@@ -13,4 +13,8 @@ public interface StudentChoiceRepository extends JpaRepository<StudentChoice, Lo
 
 //    @Query("SELECT sc FROM StudentChoice sc WHERE sc.student.userId = :studentId")
     Optional<StudentChoice> findByStudentUserId(Long studentId);
+
+    List<StudentChoice>  findByProjectsProjectId(Integer projectId);
+
+    List<StudentChoice> findByProjectsProjectIdIn(List<Long> projectIds);
 }

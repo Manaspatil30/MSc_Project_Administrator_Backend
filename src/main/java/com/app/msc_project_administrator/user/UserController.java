@@ -1,5 +1,8 @@
 package com.app.msc_project_administrator.user;
 
+import com.app.msc_project_administrator.studentChoices.StudentChoiceService;
+import com.app.msc_project_administrator.supervisorStudentPreference.SupervisorStudentPreference;
+import com.app.msc_project_administrator.supervisorStudentPreference.SupervisorStudentPreferenceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +19,8 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService service;
-
+    private final SupervisorStudentPreferenceService supervisorStudentPreferenceService;
+    private final StudentChoiceService studentChoiceService;
     @PatchMapping
     public ResponseEntity<?> changePassword(
           @RequestBody ChangePasswordRequest request,
@@ -58,5 +62,16 @@ public class UserController {
     @GetMapping("/{supervisorId}/students")
     public List<UserDTO> getStudentsAndAssignedProjects(@PathVariable Long supervisorId) {
         return service.getStudentsAndAssignedProjects(supervisorId);
+    }
+
+    @PostMapping("/supervisor/{supervisorId}/rank-students")
+    public ResponseEntity<?> rankStudents(@PathVariable Long supervisorId, @RequestBody List<SupervisorStudentPreference> preferences) {
+        supervisorStudentPreferenceService.savePreferences(supervisorId, preferences);
+        return ResponseEntity.ok("Preferences saved successfully.");
+    }
+
+    @GetMapping("/{supervisorId}/students-grouped-by-project")
+    public List<ProjectWithStudentsDTO> getStudentsGroupedByProject(@PathVariable Long supervisorId) {
+        return service.getStudentsForSupervisor(supervisorId);
     }
 }

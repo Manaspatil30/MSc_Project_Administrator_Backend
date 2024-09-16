@@ -4,10 +4,7 @@ import com.app.msc_project_administrator.project.Project;
 import com.app.msc_project_administrator.project.ProjectDTO;
 import com.app.msc_project_administrator.project.ProjectRepository;
 import com.app.msc_project_administrator.project.ProjectService;
-import com.app.msc_project_administrator.user.Role;
-import com.app.msc_project_administrator.user.SupervisorDTO;
-import com.app.msc_project_administrator.user.User;
-import com.app.msc_project_administrator.user.UserRepository;
+import com.app.msc_project_administrator.user.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -140,34 +137,6 @@ public class StudentChoiceService {
         return responseList;
     }
 
-//    public Object getProjectOrChoices(Long studentId) {
-//        ProjectDTO assignedProject = projectService.getAssignedProject(studentId);
-//        if (assignedProject != null) {
-//            // Map to ProjectDTO and return
-//            SupervisorDTO supervisorDTO = new SupervisorDTO(
-//                    assignedProject.getSupervisor().getUserId(),
-//                    assignedProject.getSupervisor().getFirstname(),
-//                    assignedProject.getSupervisor().getLastname(),
-//                    assignedProject.getSupervisor().getEmail()
-//            );
-//
-//            ProjectDTO projectDTO = new ProjectDTO(
-//                    assignedProject.getProjectId(),
-//                    assignedProject.getSupProjectId(),
-//                    assignedProject.getTitle(),
-//                    assignedProject.getDescription(),
-//                    assignedProject.getStatus(),
-//                    supervisorDTO
-//            );
-//
-//            return projectDTO; // Return the allocated project
-//        } else {
-//            // If no project is assigned, return the student's choices
-//            List<ProjectPreferenceResponse> choices = getStudentProjectPreferences(studentId);
-//            return choices; // Return the list of choices
-//        }
-//    }
-
     public Object getProjectOrChoices(Long studentId) {
         try {
             ProjectDTO assignedProject = projectService.getAssignedProject(studentId);
@@ -258,4 +227,22 @@ public class StudentChoiceService {
 
         return response;
     }
+
+//    public List<UserDTO> getStudentsForSupervisor(Long supervisorId) {
+//        // Fetch projects by supervisor
+//        List<Project> supervisorProjects = projectRepository.findAllBySupervisorUserId(supervisorId);
+//
+//        // Get students who chose these projects
+//        List<User> students = new ArrayList<>();
+//        for (Project project : supervisorProjects) {
+//            List<StudentChoice> choices = studentChoiceRepository.findByProjectsProjectId(project.getProjectId());
+//            for (StudentChoice choice : choices) {
+//                students.add(choice.getStudent());
+//            }
+//        }
+//
+//        return students;
+//    }
+
+
 }
