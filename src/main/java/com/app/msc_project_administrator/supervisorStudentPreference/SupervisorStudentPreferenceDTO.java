@@ -7,12 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RankedStudentDTO {
-    private Long userId;
-    private String firstname;
-    private String lastname;
-    private String email;
+public class SupervisorStudentPreferenceDTO {
+    private Long studentId;
     private int preference;
 
-    // Constructor, Getters, and Setters
+    // Getters and setters
 }

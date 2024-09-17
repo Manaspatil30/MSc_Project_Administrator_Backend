@@ -1,7 +1,9 @@
 package com.app.msc_project_administrator.user;
 
 import com.app.msc_project_administrator.studentChoices.StudentChoiceService;
+import com.app.msc_project_administrator.supervisorStudentPreference.ProjectWithRankedStudentsDTO;
 import com.app.msc_project_administrator.supervisorStudentPreference.SupervisorStudentPreference;
+import com.app.msc_project_administrator.supervisorStudentPreference.SupervisorStudentPreferenceDTO;
 import com.app.msc_project_administrator.supervisorStudentPreference.SupervisorStudentPreferenceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -65,13 +67,18 @@ public class UserController {
     }
 
     @PostMapping("/supervisor/{supervisorId}/rank-students")
-    public ResponseEntity<?> rankStudents(@PathVariable Long supervisorId, @RequestBody List<SupervisorStudentPreference> preferences) {
-        supervisorStudentPreferenceService.savePreferences(supervisorId, preferences);
+    public ResponseEntity<?> rankStudents(@PathVariable Long supervisorId, @RequestParam Integer projectId, @RequestBody List<SupervisorStudentPreferenceDTO> preferences) {
+        supervisorStudentPreferenceService.savePreferences(supervisorId, projectId, preferences);
         return ResponseEntity.ok("Preferences saved successfully.");
     }
 
     @GetMapping("/{supervisorId}/students-grouped-by-project")
     public List<ProjectWithStudentsDTO> getStudentsGroupedByProject(@PathVariable Long supervisorId) {
         return service.getStudentsForSupervisor(supervisorId);
+    }
+
+    @GetMapping("/projects-with-ranked-students")
+    public ResponseEntity<List<ProjectWithRankedStudentsDTO>> getProjectsWithRankedStudents() {
+        return ResponseEntity.ok(service.getProjectsWithRankedStudents());
     }
 }

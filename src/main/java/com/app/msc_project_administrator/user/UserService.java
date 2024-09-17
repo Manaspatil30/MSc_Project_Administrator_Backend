@@ -130,6 +130,40 @@ public class UserService {
         return projectWithStudentsList;
     }
 
+    public List<ProjectWithRankedStudentsDTO> getProjectsWithRankedStudents() {
+        List<ProjectWithRankedStudentsDTO> projectWithRankedStudents = new ArrayList<>();
+
+        // Fetch all projects
+        List<Project> allProjects = projectRepository.findAll();
+
+        for (Project project : allProjects) {
+            ProjectWithRankedStudentsDTO projectDTO = new ProjectWithRankedStudentsDTO();
+            projectDTO.setProjectId(project.getProjectId());
+            projectDTO.setProjectTitle(project.getTitle());
+
+            // Get ranked students for the project
+            List<SupervisorStudentPreference> rankedStudents = preferenceRepository.findByProject_ProjectId(project.getProjectId());
+
+            List<RankedStudentDTO> rankedStudentDTOs = rankedStudents.stream()
+                    .map(preference -> {
+                        User student = preference.getStudent();
+                        return new RankedStudentDTO(
+                                student.getUserId(),
+                                student.getFirstname(),
+                                student.getLastname(),
+                                student.getEmail(),
+                                preference.getPreference()
+                        );
+                    })
+                    .collect(Collectors.toList());
+
+            projectDTO.setRankedStudents(rankedStudentDTOs);
+            projectWithRankedStudents.add(projectDTO);
+        }
+
+        return projectWithRankedStudents;
+    }
+
     public UserDTO mapToUserDTO(User user) {
 
         Optional<UserProjectAssignment> assignment = userProjectAssignmentRepository.findByUser_UserId(user.getUserId());

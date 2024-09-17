@@ -1,6 +1,7 @@
 package com.app.msc_project_administrator.supervisorStudentPreference;
 
 
+import com.app.msc_project_administrator.project.Project;
 import com.app.msc_project_administrator.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,6 +24,9 @@ public class SupervisorStudentPreference {
 
     @ManyToOne
     private User student;
+
+    @ManyToOne
+    private Project project;
 
     private int preference; // Ranking: 1 for highest preference, etc.
 }

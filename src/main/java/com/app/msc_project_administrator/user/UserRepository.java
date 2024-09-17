@@ -24,6 +24,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   List<User> findByExpertiseTagsIn(Set<Tag> tags);
 
+  @Query("SELECT u FROM User u WHERE u.role = :role AND u.userId NOT IN (SELECT sc.student.userId FROM StudentChoice sc)")
+  List<User> findStudentsWithoutPreferences();
+
   // Fetch supervisors who have worked on projects with the given tags (expertise)
   @Query("SELECT DISTINCT u FROM User u JOIN u.projects p JOIN p.tags t WHERE t IN :tags AND u.role = 'ACADEMIC'")
   List<User> findSupervisorsByTags(@Param("tags") Set<Tag> tags);
