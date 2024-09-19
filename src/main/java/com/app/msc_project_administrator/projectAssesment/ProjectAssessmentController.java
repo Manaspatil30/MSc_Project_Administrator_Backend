@@ -35,7 +35,7 @@ public class ProjectAssessmentController {
     @GetMapping("/viewAssignedProjects")
     public List<ProjectDTO> viewAssignedProjects(Principal principal) {
         User supervisor = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
-        List<ProjectAssessment> assessments = projectAssessmentRepository.findBySupervisor(supervisor);
+        List<ProjectAssessment> assessments = projectAssessmentRepository.findByAssessor(supervisor);
 
         return assessments.stream()
                 .map(assessment -> projectService.convertToDTO(assessment.getProject()))

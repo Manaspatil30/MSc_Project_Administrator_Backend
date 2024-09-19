@@ -27,7 +27,7 @@ public class ModOwnerController {
         User modOwner = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
 
         // Fetch all assigned projects
-        List<ModProjectDTO> assignedProjects = projectService.getAllAssignedProjectsForModOwner(modOwner);
+        List<ModProjectDTO> assignedProjects = projectService.getAssignedProjectsWithoutAssessors(modOwner);
 
         return ResponseEntity.ok(assignedProjects);
     }
@@ -37,5 +37,16 @@ public class ModOwnerController {
         // Fetch supervisors based on expertise for the provided project
         List<UserDTO> supervisors = projectService.getSupervisorsByExpertise(projectId);
         return ResponseEntity.ok(supervisors);
+    }
+
+    @GetMapping("/projectsWithAssessors")
+    public ResponseEntity<List<ModProjectDTO>> getProjectsWithAssessors(Principal principal) {
+        // Fetch MOD_OWNER details from the principal
+        User modOwner = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+
+        // Fetch projects with assessors
+        List<ModProjectDTO> projectsWithAssessors = projectService.getProjectsWithAssessors(modOwner);
+
+        return ResponseEntity.ok(projectsWithAssessors);
     }
 }

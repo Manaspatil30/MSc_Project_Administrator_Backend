@@ -4,6 +4,8 @@ import com.app.msc_project_administrator.modOwner.ModProjectDTO;
 import com.app.msc_project_administrator.modOwner.ModUserDTO;
 import com.app.msc_project_administrator.programe.Programe;
 import com.app.msc_project_administrator.programe.ProgrameRepository;
+import com.app.msc_project_administrator.projectAssesment.ProjectAssessment;
+import com.app.msc_project_administrator.projectAssesment.ProjectAssessmentRepository;
 import com.app.msc_project_administrator.projectQuestions.ProjectQuestion;
 import com.app.msc_project_administrator.user.*;
 import com.app.msc_project_administrator.userProjectAssign.UserProjectAssignment;
@@ -24,6 +26,7 @@ public class ProjectService {
     private final TagRepository tagRepository;
     private final ProgrameRepository programeRepository;
     private final UserProjectAssignmentRepository userProjectAssignmentRepository;
+    private final ProjectAssessmentRepository projectAssessmentRepository;
     public Project createProject(ProjectRequest request){
         Set<Programe> programs = new HashSet<>(programeRepository.findAllById(request.getProgrameIds()));
         //Get Supervisor
@@ -162,20 +165,72 @@ public class ProjectService {
 //                .collect(Collectors.toList());
 //    }
 
-    public List<ModProjectDTO> getAllAssignedProjectsForModOwner(User modOwner) {
+//    public List<ModProjectDTO> getAllAssignedProjectsForModOwner(User modOwner) {
+//        // Ensure the user has MOD_OWNER role
+//        if (!modOwner.getRole().equals(Role.MOD_OWNER)) {
+//            throw new RuntimeException("Only module owners can view all assigned projects.");
+//        }
+//
+//        // Fetch all projects assigned to students
+//        List<UserProjectAssignment> assignments = userProjectAssignmentRepository.findAll();
+//
+//        // Collect projects and associated students
+//        return assignments.stream()
+//                .map(assignment -> {
+//                    Project project = assignment.getProject();
+//                    User student = assignment.getUser();
+//                    User supervisor = project.getSupervisor();
+//
+//                    // Convert student to UserDTO
+//                    ModUserDTO studentDTO = new ModUserDTO(
+//                            student.getUserId(),
+//                            student.getFirstname(),
+//                            student.getLastname(),
+//                            student.getEmail()
+//                    );
+//
+//                    // Convert supervisor to UserDTO (if available)
+//                    ModUserDTO supervisorDTO = supervisor != null ? new ModUserDTO(
+//                            supervisor.getUserId(),
+//                            supervisor.getFirstname(),
+//                            supervisor.getLastname(),
+//                            supervisor.getEmail()
+//                    ) : null;
+//
+//                    // Convert project to ProjectDTO and include the student
+//                    return new ModProjectDTO(
+//                            project.getProjectId(),
+//                            project.getTitle(),
+//                            project.getDescription(),
+//                            project.getStatus(),
+//                            List.of(studentDTO), // Include students assigned to the project
+//                            supervisorDTO
+//                    );
+//                })
+//                .collect(Collectors.toList());
+//    }
+
+    public List<ModProjectDTO> getAssignedProjectsWithoutAssessors(User modOwner) {
         // Ensure the user has MOD_OWNER role
         if (!modOwner.getRole().equals(Role.MOD_OWNER)) {
-            throw new RuntimeException("Only module owners can view all assigned projects.");
+            throw new RuntimeException("Only module owners can view assigned projects.");
         }
 
         // Fetch all projects assigned to students
         List<UserProjectAssignment> assignments = userProjectAssignmentRepository.findAll();
 
-        // Collect projects and associated students
+        // Fetch all project IDs that have assessors
+        List<Integer> projectsWithAssessors = projectAssessmentRepository.findAll().stream()
+                .map(assessment -> assessment.getProject().getProjectId())
+                .collect(Collectors.toList());
+
+        // Filter projects that do not have an assessor
         return assignments.stream()
+                .filter(assignment -> !projectsWithAssessors.contains(assignment.getProject().getProjectId()))
                 .map(assignment -> {
                     Project project = assignment.getProject();
                     User student = assignment.getUser();
+                    User supervisor = project.getSupervisor();
 
                     // Convert student to UserDTO
                     ModUserDTO studentDTO = new ModUserDTO(
@@ -185,31 +240,94 @@ public class ProjectService {
                             student.getEmail()
                     );
 
+                    // Convert supervisor to UserDTO (if available)
+                    ModUserDTO supervisorDTO = supervisor != null ? new ModUserDTO(
+                            supervisor.getUserId(),
+                            supervisor.getFirstname(),
+                            supervisor.getLastname(),
+                            supervisor.getEmail()
+                    ) : null;
+
                     // Convert project to ProjectDTO and include the student
                     return new ModProjectDTO(
                             project.getProjectId(),
                             project.getTitle(),
                             project.getDescription(),
                             project.getStatus(),
-                            List.of(studentDTO) // Include students assigned to the project
+                            List.of(studentDTO),// Include students assigned to the project
+                            supervisorDTO
                     );
                 })
                 .collect(Collectors.toList());
     }
+
+
+    public List<ModProjectDTO> getProjectsWithAssessors(User modOwner) {
+        // Ensure the user has MOD_OWNER role
+        if (!modOwner.getRole().equals(Role.MOD_OWNER)) {
+            throw new RuntimeException("Only module owners can view all projects with assessors.");
+        }
+
+        // Fetch all project assessments
+        List<ProjectAssessment> assessments = projectAssessmentRepository.findAll();
+
+        // Collect projects and associated students with assessors
+        return assessments.stream()
+                .map(assessment -> {
+                    Project project = assessment.getProject();
+//                    User student = assessment.getStudent(); // Assuming you have a way to get the assigned student
+                    User supervisor = assessment.getAssessor();
+
+                    // Convert student to UserDTO
+//                    ModUserDTO studentDTO = new ModUserDTO(
+//                            student.getUserId(),
+//                            student.getFirstname(),
+//                            student.getLastname(),
+//                            student.getEmail()
+//                    );
+
+                    // Convert supervisor to UserDTO
+                    ModUserDTO supervisorDTO = new ModUserDTO(
+                            supervisor.getUserId(),
+                            supervisor.getFirstname(),
+                            supervisor.getLastname(),
+                            supervisor.getEmail()
+                    );
+
+                    // Convert project to ProjectDTO and include the student and supervisor
+                    return new ModProjectDTO(
+                            project.getProjectId(),
+                            project.getTitle(),
+                            project.getDescription(),
+                            project.getStatus(),
+                            null, // Include students assigned to the project
+                            supervisorDTO // Include supervisor
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
 
     public List<UserDTO> getSupervisorsByExpertise(Long projectId) {
         // Fetch the project based on projectId
         Project project = repository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
+        // Get the supervisor of the project
+        User projectSupervisor = project.getSupervisor();
+
         // Fetch the tags (expertise) of the project
         Set<Tag> projectTags = project.getTags();
 
-        // Step 1: Find supervisors who have expertise related to the project's tags
-        List<User> relevantSupervisors = userRepository.findSupervisorsByTags(projectTags);
+        // Step 1: Find supervisors who have expertise related to the project's tags, excluding the project's supervisor
+        List<User> relevantSupervisors = userRepository.findSupervisorsByTags(projectTags).stream()
+                .filter(supervisor -> !supervisor.getUserId().equals(projectSupervisor.getUserId()))
+                .collect(Collectors.toList());
 
-        // Step 2: Find all other supervisors who are not as relevant (not matching the tags)
-        List<User> otherSupervisors = userRepository.findAllSupervisorsExcludingTags(projectTags);
+        // Step 2: Find all other supervisors who are not as relevant (not matching the tags), excluding the project's supervisor
+        List<User> otherSupervisors = userRepository.findAllSupervisorsExcludingTags(projectTags).stream()
+                .filter(supervisor -> !supervisor.getUserId().equals(projectSupervisor.getUserId()))
+                .collect(Collectors.toList());
 
         // Convert to UserDTO (supervisors with expertise first, then the rest)
         List<UserDTO> supervisorDTOs = new ArrayList<>();

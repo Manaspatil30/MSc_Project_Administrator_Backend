@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -23,6 +24,12 @@ public class ProjectAssessmentService {
     public void assignProjectForAssessment(Long projectId, Long supervisorId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        Optional<ProjectAssessment> existingAssessment = projectAssessmentRepository.findByProject_ProjectId(projectId);
+        if (existingAssessment.isPresent()) {
+            throw new RuntimeException("This project is already assigned to a supervisor.");
+        }
+
         User supervisor = userRepository.findById(supervisorId)
                 .orElseThrow(() -> new RuntimeException("Supervisor not found"));
         // Check if the user is a supervisor (ACADEMIC role)
@@ -32,7 +39,7 @@ public class ProjectAssessmentService {
 
         ProjectAssessment assessment = new ProjectAssessment();
         assessment.setProject(project);
-        assessment.setSupervisor(supervisor);
+        assessment.setAssessor(supervisor);
         assessment.setStatus("Pending");
 
         projectAssessmentRepository.save(assessment);
