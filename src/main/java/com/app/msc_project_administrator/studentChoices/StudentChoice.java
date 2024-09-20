@@ -1,5 +1,6 @@
 package com.app.msc_project_administrator.studentChoices;
 
+import com.app.msc_project_administrator.answer.Answer;
 import com.app.msc_project_administrator.project.Project;
 import com.app.msc_project_administrator.user.User;
 import jakarta.persistence.*;
@@ -37,6 +38,9 @@ public class StudentChoice {
     @CollectionTable(name = "student_choice_preference", joinColumns = @JoinColumn(name = "student_choice_choice_id"))
     @Column(name = "preferences")
     private List<Integer> preferences;
+
+    @OneToMany(mappedBy = "studentChoice", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Answer> answers; // Relationship with Answer
 
     @PrePersist
     @PreUpdate

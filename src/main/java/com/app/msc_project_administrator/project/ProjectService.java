@@ -36,15 +36,6 @@ public class ProjectService {
         }
         User supervisor = optionalSupervisor.get();
 
-        //Get associateSupervisor
-//        User associateSupervisor = null;
-//        if(request.getAssociateSupervisor() != null) {
-//            Optional<User> optionalAssociateSupervisor = userRepository.findById(request.getAssociateSupervisor());
-//            if(optionalAssociateSupervisor.isPresent()){
-//                associateSupervisor = optionalAssociateSupervisor.get();
-//            }
-//        }
-
         //Generate Project Id based on supervisors initials and sequence number
         String supervisorInitials = supervisor.getFirstname().substring(0,1) + supervisor.getLastname().substring(0,1);
         long projectCount = repository.countBySupervisor(supervisor);
@@ -137,7 +128,8 @@ public class ProjectService {
                         assignedProject.getDescription(),
                         assignedProject.getStatus(),
                         supervisorDTO,
-                        assignedProject.getPrograme()
+                        assignedProject.getPrograme(),
+                        null
                 );
             } else {
                 throw new RuntimeException("No project assigned to this student.");
@@ -442,7 +434,8 @@ public class ProjectService {
                 project.getStatus(),
                 supervisorDTO,
                 // Include programs in the DTO
-                project.getPrograme()
+                project.getPrograme(),
+                project.getQuestions()
         );
     }
 

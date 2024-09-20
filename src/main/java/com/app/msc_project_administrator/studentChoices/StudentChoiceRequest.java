@@ -1,5 +1,6 @@
 package com.app.msc_project_administrator.studentChoices;
 
+import com.app.msc_project_administrator.answer.AnswerDTO;
 import lombok.*;
 
 import java.util.List;
@@ -16,5 +17,6 @@ public class StudentChoiceRequest {
     public static class ProjectPreference {
         private Long projectId;
         private Integer preference;
+        private List<AnswerDTO> answers;
     }
 }

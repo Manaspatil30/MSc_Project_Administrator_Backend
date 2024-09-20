@@ -1,9 +1,12 @@
 package com.app.msc_project_administrator.studentChoices;
 
+import com.app.msc_project_administrator.answer.Answer;
+import com.app.msc_project_administrator.answer.AnswerRepository;
 import com.app.msc_project_administrator.project.Project;
 import com.app.msc_project_administrator.project.ProjectDTO;
 import com.app.msc_project_administrator.project.ProjectRepository;
 import com.app.msc_project_administrator.project.ProjectService;
+import com.app.msc_project_administrator.projectQuestions.ProjectQuestionRepository;
 import com.app.msc_project_administrator.user.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,12 @@ public class StudentChoiceService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;
+
+    @Autowired
+    private ProjectQuestionRepository questionRepository;
 
 
     public void saveStudentChoice(User student, List<StudentChoiceRequest.ProjectPreference> projectPreferences) {
@@ -56,7 +65,7 @@ public class StudentChoiceService {
         // Check if the student has already submitted choices
         StudentChoice choice = studentChoiceRepository.findByStudent(student);
 
-        // Updated: Throw exception if choices are already submitted
+        // Throw exception if choices are already submitted
         if (choice != null) {
             throw new RuntimeException("Cannot submit preferences again. Choices have already been submitted.");
         }
@@ -68,20 +77,38 @@ public class StudentChoiceService {
         // Fetch the projects and set preferences
         List<Project> projects = new ArrayList<>();
         List<Integer> preferences = new ArrayList<>();
+        List<Answer> allAnswers = new ArrayList<>();
 
         for (StudentChoiceRequest.ProjectPreference projectPreference : projectPreferences) {
             Project project = projectRepository.findById(projectPreference.getProjectId())
                     .orElseThrow(() -> new IllegalArgumentException("Project not found"));
             projects.add(project);
             preferences.add(projectPreference.getPreference());
+
+            // Handle answers to questions
+            StudentChoice finalChoice = choice;
+            if (projectPreference.getAnswers() != null) {
+                List<Answer> answers = projectPreference.getAnswers().stream().map(answerDTO -> {
+                    Answer answer = new Answer();
+                    answer.setQuestion(questionRepository.findById(answerDTO.getQuestionId())
+                            .orElseThrow(() -> new IllegalArgumentException("Question not found"))); // Assuming you have a Question entity and repository
+                    answer.setAnswer(answerDTO.getAnswer());
+                    answer.setStudentChoice(finalChoice); // Link it to the student's choice
+                    return answer;
+                }).collect(Collectors.toList());
+
+                allAnswers.addAll(answers); // Collect all answers to save later
+            }
         }
 
         choice.setProjects(projects);
         choice.setPreferences(preferences);
+        choice.setAnswers(allAnswers); // Associate answers with the student choice
 
-        // Save the student choice
+        // Save the student choice and answers
         studentChoiceRepository.save(choice);
     }
+
 
     public StudentChoice getStudentChoice(User student){
         return studentChoiceRepository.findByStudent(student);
@@ -156,7 +183,8 @@ public class StudentChoiceService {
                         assignedProject.getDescription(),
                         assignedProject.getStatus(),
                         supervisorDTO,
-                        assignedProject.getProgrames()
+                        assignedProject.getProgrames(),
+                        assignedProject.getQuestions()
                 );
 
                 return projectDTO; // Return the allocated project

@@ -1,5 +1,7 @@
 package com.app.msc_project_administrator.user;
 
+import com.app.msc_project_administrator.answer.AnswerDTO;
+import com.app.msc_project_administrator.answer.UserWithAnswersDTO;
 import com.app.msc_project_administrator.project.Project;
 import com.app.msc_project_administrator.project.ProjectDTO;
 import com.app.msc_project_administrator.project.ProjectRepository;
@@ -95,7 +97,8 @@ public class UserService {
                 project.getDescription(),
                 project.getStatus(),
                 null, // Add SupervisorDTO if needed
-                project.getPrograme() // assuming `getPrograme` gives related tags or programs
+                project.getPrograme(), // assuming `getPrograme` gives related tags or programs
+                project.getQuestions()
         );
     }
 
@@ -109,9 +112,29 @@ public class UserService {
         for (Project project : supervisorProjects) {
             List<StudentChoice> choices = studentChoiceRepository.findByProjectsProjectId(project.getProjectId());
 
-            // Collect students who chose this project
-            List<UserDTO> studentDTOs = choices.stream()
-                    .map(choice -> mapToUserDTO(choice.getStudent()))
+            // Collect students who chose this project, along with their answers
+            List<UserWithAnswersDTO> studentDTOs = choices.stream()
+                    .map(choice -> {
+                        UserWithAnswersDTO userWithAnswersDTO = new UserWithAnswersDTO();
+                        userWithAnswersDTO.setUserId(choice.getStudent().getUserId());
+                        userWithAnswersDTO.setFirstname(choice.getStudent().getFirstname());
+                        userWithAnswersDTO.setLastname(choice.getStudent().getLastname());
+                        userWithAnswersDTO.setEmail(choice.getStudent().getEmail());
+
+                        // Fetch and map the answers for this project
+                        List<AnswerDTO> answerDTOs = choice.getAnswers().stream()
+                                .map(answer -> {
+                                    AnswerDTO answerDTO = new AnswerDTO();
+                                    answerDTO.setQuestionId(Long.valueOf(answer.getQuestion().getQuestionId()));
+                                    answerDTO.setQuestionText(answer.getQuestion().getQuestionText());
+                                    answerDTO.setAnswer(answer.getAnswer());
+                                    return answerDTO;
+                                })
+                                .collect(Collectors.toList());
+
+                        userWithAnswersDTO.setAnswers(answerDTOs);
+                        return userWithAnswersDTO;
+                    })
                     .collect(Collectors.toList());
 
             // Create a new DTO for the project with students
@@ -190,7 +213,8 @@ public class UserService {
                     assignedProject.getDescription(),
                     assignedProject.getStatus(),
                     supervisorDTO,
-                    assignedProject.getPrograme()
+                    assignedProject.getPrograme(),
+                    assignedProject.getQuestions()
             );
         }
 
