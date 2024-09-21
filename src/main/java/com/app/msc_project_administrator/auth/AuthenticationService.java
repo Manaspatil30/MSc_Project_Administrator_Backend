@@ -82,7 +82,11 @@ public class AuthenticationService {
     );
 
     User user = repository.findByEmail(request.getEmail())
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new RuntimeException("The email you entered is not registered."));
+
+    if (!passwordEncoder.matches(request.getPassword(), user.getPassword())){
+      throw new RuntimeException("The password you entered is incorrect.");
+    }
 
     String jwtToken = jwtService.generateToken(user);
     UserDTO userDTO = userService.mapToUserDTO(user);

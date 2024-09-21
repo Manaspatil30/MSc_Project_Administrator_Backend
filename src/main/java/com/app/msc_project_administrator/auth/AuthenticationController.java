@@ -3,6 +3,7 @@ package com.app.msc_project_administrator.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +29,11 @@ public class AuthenticationController {
   public ResponseEntity<AuthenticationResponse> authenticate(
       @RequestBody AuthenticationRequest request
   ) {
-    return ResponseEntity.ok(service.authenticate(request));
+    try {
+      return ResponseEntity.ok(service.authenticate(request));
+    } catch (RuntimeException ex){
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthenticationResponse(ex.getLocalizedMessage(), null));
+    }
   }
 
 //  @PostMapping("/refresh-token")
