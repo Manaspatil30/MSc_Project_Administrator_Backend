@@ -98,7 +98,8 @@ public class UserService {
                 project.getStatus(),
                 null, // Add SupervisorDTO if needed
                 project.getPrograme(), // assuming `getPrograme` gives related tags or programs
-                project.getQuestions()
+                project.getQuestions(),
+                project.getQuota()
         );
     }
 
@@ -214,7 +215,8 @@ public class UserService {
                     assignedProject.getStatus(),
                     supervisorDTO,
                     assignedProject.getPrograme(),
-                    assignedProject.getQuestions()
+                    assignedProject.getQuestions(),
+                    assignedProject.getQuota()
             );
         }
 

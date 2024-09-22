@@ -184,7 +184,8 @@ public class StudentChoiceService {
                         assignedProject.getStatus(),
                         supervisorDTO,
                         assignedProject.getProgrames(),
-                        assignedProject.getQuestions()
+                        assignedProject.getQuestions(),
+                        assignedProject.getQuota()
                 );
 
                 return projectDTO; // Return the allocated project

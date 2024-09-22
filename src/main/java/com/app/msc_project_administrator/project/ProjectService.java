@@ -129,7 +129,8 @@ public class ProjectService {
                         assignedProject.getStatus(),
                         supervisorDTO,
                         assignedProject.getPrograme(),
-                        null
+                        null,
+                        assignedProject.getQuota()
                 );
             } else {
                 throw new RuntimeException("No project assigned to this student.");
@@ -435,7 +436,8 @@ public class ProjectService {
                 supervisorDTO,
                 // Include programs in the DTO
                 project.getPrograme(),
-                project.getQuestions()
+                project.getQuestions(),
+                project.getQuota()
         );
     }
 

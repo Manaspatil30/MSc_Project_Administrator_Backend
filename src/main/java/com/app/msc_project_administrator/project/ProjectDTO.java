@@ -22,4 +22,5 @@ public class ProjectDTO {
     private SupervisorDTO supervisor;
     private Set<Programe> programes;
     private List<ProjectQuestion> questions;
+    private Integer quota;
 }
