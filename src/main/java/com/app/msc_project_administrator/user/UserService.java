@@ -111,6 +111,14 @@ public class UserService {
         List<ProjectWithStudentsDTO> projectWithStudentsList = new ArrayList<>();
 
         for (Project project : supervisorProjects) {
+            // Check if preferences have already been submitted for this project
+            List<SupervisorStudentPreference> existingPreferences = preferenceRepository.findByProject_ProjectId(project.getProjectId());
+
+            // Skip projects that already have submitted preferences
+            if (!existingPreferences.isEmpty()) {
+                continue;
+            }
+
             List<StudentChoice> choices = studentChoiceRepository.findByProjectsProjectId(project.getProjectId());
 
             // Collect students who chose this project, along with their answers
@@ -161,12 +169,18 @@ public class UserService {
         List<Project> allProjects = projectRepository.findAll();
 
         for (Project project : allProjects) {
+            // Check if preferences have been submitted for this project
+            List<SupervisorStudentPreference> rankedStudents = preferenceRepository.findByProject_ProjectId(project.getProjectId());
+
+            // Skip projects without preferences
+            if (rankedStudents.isEmpty()) {
+                continue;
+            }
+
             ProjectWithRankedStudentsDTO projectDTO = new ProjectWithRankedStudentsDTO();
             projectDTO.setProjectId(project.getProjectId());
             projectDTO.setProjectTitle(project.getTitle());
 
-            // Get ranked students for the project
-            List<SupervisorStudentPreference> rankedStudents = preferenceRepository.findByProject_ProjectId(project.getProjectId());
 
             List<RankedStudentDTO> rankedStudentDTOs = rankedStudents.stream()
                     .map(preference -> {
