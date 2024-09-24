@@ -4,13 +4,11 @@ import com.app.msc_project_administrator.project.ProjectDTO;
 import com.app.msc_project_administrator.project.ProjectService;
 import com.app.msc_project_administrator.user.User;
 import com.app.msc_project_administrator.user.UserDTO;
+import com.app.msc_project_administrator.userProjectAssign.ProjectAssignmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -20,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ModOwnerController {
     private final ProjectService projectService;
+    private final ProjectAssignmentService projectAssignmentService;
 
     @GetMapping("/assignedProjects")
     public ResponseEntity<List<ModProjectDTO>> getAssignedProjects(Principal principal) {
@@ -48,5 +47,15 @@ public class ModOwnerController {
         List<ModProjectDTO> projectsWithAssessors = projectService.getProjectsWithAssessors(modOwner);
 
         return ResponseEntity.ok(projectsWithAssessors);
+    }
+
+    @PostMapping("/allocate-projects")
+    public ResponseEntity<String> allocateProjects() {
+        try {
+            projectAssignmentService.allocateProjects();
+            return ResponseEntity.ok("Projects allocated successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An error occurred during allocation: " + e.getMessage());
+        }
     }
 }
