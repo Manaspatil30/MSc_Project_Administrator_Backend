@@ -8,4 +8,6 @@ import java.util.List;
 public interface SupervisorStudentPreferenceRepository extends JpaRepository<SupervisorStudentPreference, Long> {
     // Adjusted query to find by project ID
     List<SupervisorStudentPreference> findByProject_ProjectId(Integer projectId);
+
+    void deleteByStudent_UserIdAndProject_ProjectId(Long studentId, Integer projectId);
 }

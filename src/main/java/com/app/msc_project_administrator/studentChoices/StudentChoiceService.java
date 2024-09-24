@@ -8,6 +8,8 @@ import com.app.msc_project_administrator.project.ProjectRepository;
 import com.app.msc_project_administrator.project.ProjectService;
 import com.app.msc_project_administrator.projectQuestions.ProjectQuestionRepository;
 import com.app.msc_project_administrator.user.*;
+import com.app.msc_project_administrator.userProjectAssign.UserProjectAssignment;
+import com.app.msc_project_administrator.userProjectAssign.UserProjectAssignmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +36,9 @@ public class StudentChoiceService {
 
     @Autowired
     private ProjectQuestionRepository questionRepository;
+
+    @Autowired
+    private UserProjectAssignmentRepository userProjectAssignmentRepository;
 
 
     public void saveStudentChoice(User student, List<StudentChoiceRequest.ProjectPreference> projectPreferences) {
@@ -218,9 +223,36 @@ public class StudentChoiceService {
                 .map(StudentChoice::getStudent)
                 .collect(Collectors.toList());
 
+        // Find all students who have been allocated a project
+        List<UserProjectAssignment> allocatedProjects = userProjectAssignmentRepository.findAll();
+        List<User> allocatedStudents = allocatedProjects.stream()
+                .map(UserProjectAssignment::getUser)
+                .collect(Collectors.toList());
+
         // Find students who haven't submitted preferences
         List<User> studentsWithoutPreferences = allStudents.stream()
-                .filter(student -> !studentsWithPreferences.contains(student))
+                .filter(student -> !studentsWithPreferences.contains(student) && !allocatedStudents.contains(student))
+                .collect(Collectors.toList());
+
+        // Collect allocated students with their allocated projects
+        List<Map<String, Object>> studentsWithAllocatedProjects = allocatedProjects.stream()
+                .map(assignment -> {
+                    Map<String, Object> allocationMap = new HashMap<>();
+                    User student = assignment.getUser();
+                    Project allocatedProject = assignment.getProject();
+
+                    allocationMap.put("studentId", student.getUserId());
+                    allocationMap.put("firstname", student.getFirstname());
+                    allocationMap.put("lastname", student.getLastname());
+                    allocationMap.put("email", student.getEmail());
+
+                    Map<String, Object> projectDetails = new HashMap<>();
+                    projectDetails.put("projectId", allocatedProject.getProjectId());
+                    projectDetails.put("projectTitle", allocatedProject.getTitle());
+                    allocationMap.put("allocatedProject", projectDetails);
+
+                    return allocationMap;
+                })
                 .collect(Collectors.toList());
 
         // Prepare the response with projects and preferences combined
@@ -253,6 +285,7 @@ public class StudentChoiceService {
         response.put("studentChoices", choicesWithPreferences); // All student preferences with project info
         response.put("studentsWithoutPreferences", studentsWithoutPreferences); // Students who haven't submitted preferences
         response.put("remainingCount", studentsWithoutPreferences.size()); // Count of students who haven't submitted
+        response.put("studentsWithAllocatedProjects", studentsWithAllocatedProjects); // Students allocated to projects with their projects
 
         return response;
     }

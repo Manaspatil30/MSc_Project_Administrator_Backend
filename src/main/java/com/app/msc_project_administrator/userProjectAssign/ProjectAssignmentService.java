@@ -3,6 +3,7 @@ package com.app.msc_project_administrator.userProjectAssign;
 import com.app.msc_project_administrator.project.Project;
 import com.app.msc_project_administrator.project.ProjectRepository;
 import com.app.msc_project_administrator.project.ProjectService;
+import com.app.msc_project_administrator.project.Status;
 import com.app.msc_project_administrator.projectAssesment.AssignmentRequest;
 import com.app.msc_project_administrator.studentChoices.ProjectPreferenceResponse;
 import com.app.msc_project_administrator.studentChoices.StudentChoice;
@@ -68,11 +69,15 @@ public class ProjectAssignmentService {
                     // Update the quota
                     projectQuotaMap.put(preferredProject.getProjectId().longValue(), remainingQuota - 1);
 
+                    // Change the project status to 'Assigned'
+                    preferredProject.setStatus(Status.Assigned);
+                    projectRepository.save(preferredProject);
+
                     // Delete student's preferences after allocation
-                    //studentChoiceRepository.delete(choice);
+                    studentChoiceRepository.delete(choice);
 
                     // Remove this student from supervisor's preference list if you have a supervisor-student preference table
-                    //preferenceRepository.deleteByStudentIdAndProjectId(student.getUserId(), preferredProject.getProjectId());
+                    preferenceRepository.deleteByStudent_UserIdAndProject_ProjectId(student.getUserId(), preferredProject.getProjectId());
 
                     break; // Exit the loop after successful assignment
                 }

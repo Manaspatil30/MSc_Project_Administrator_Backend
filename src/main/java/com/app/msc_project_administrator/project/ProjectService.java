@@ -254,6 +254,27 @@ public class ProjectService {
                 .collect(Collectors.toList());
     }
 
+    public List<ProjectDTO> getProjectsForSupervisor(Long supervisorId) {
+        // Fetch all projects supervised by the given supervisor ID
+        List<Project> projects = repository.findAllBySupervisorUserId(supervisorId);
+
+        // Map the projects to ProjectDTO
+        return projects.stream()
+                .map(project -> new ProjectDTO(
+                        project.getProjectId(),
+                        project.getSupProjectId(),
+                        project.getTitle(),
+                        project.getDescription(),
+                        project.getStatus(),
+                        null,
+                        null,
+                        project.getQuestions(),
+                        project.getQuota()
+
+                ))
+                .collect(Collectors.toList());
+    }
+
 
     public List<ModProjectDTO> getProjectsWithAssessors(User modOwner) {
         // Ensure the user has MOD_OWNER role

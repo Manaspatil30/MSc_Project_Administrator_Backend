@@ -24,6 +24,10 @@ public class ProjectController {
     @Autowired
     private ProjectService service;
 
+    @Autowired
+    private ProjectRepository projectRepository;
+
+
     @PostMapping("/create")
     public ResponseEntity<?> save(@RequestBody ProjectRequest request){
         try{
@@ -44,6 +48,13 @@ public class ProjectController {
     @GetMapping
     public ResponseEntity<List<ProjectDTO>> getAllProjects() {
         List<ProjectDTO> projects = service.findAllSortedBySupProjectId();
+        return ResponseEntity.ok(projects);
+    }
+
+    @GetMapping("/supervisor/{supervisorId}/projects")
+    public ResponseEntity<List<ProjectDTO>> getProjectsForSupervisor(@PathVariable Long supervisorId) {
+        // Call the service to get the projects
+        List<ProjectDTO> projects = service.getProjectsForSupervisor(supervisorId);
         return ResponseEntity.ok(projects);
     }
 
