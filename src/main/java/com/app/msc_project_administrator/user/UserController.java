@@ -38,7 +38,6 @@ public class UserController {
    }
 
    @GetMapping("/by-id")
-   @PreAuthorize("#id.contains(#user.userId)")
     public ResponseEntity<List<User>> getAllUsersById(@RequestParam List<Integer> id, @AuthenticationPrincipal User user){
         return ResponseEntity.ok(service.getUsersByIds(id));
    }
