@@ -12,6 +12,8 @@ import com.app.msc_project_administrator.user.UserDTO;
 import com.app.msc_project_administrator.user.UserRepository;
 import com.app.msc_project_administrator.user.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +25,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +57,17 @@ public class AuthenticationService {
         .accessToken(jwtToken)
 //            .refreshToken(refreshToken)
         .build();
+  }
+
+  public List<RegisterRequest> parseCsv(MultipartFile file) throws Exception {
+    try (InputStreamReader reader = new InputStreamReader(file.getInputStream())) {
+      CsvToBean<RegisterRequest> csvToBean = new CsvToBeanBuilder<RegisterRequest>(reader)
+              .withType(RegisterRequest.class)
+              .withIgnoreLeadingWhiteSpace(true)
+              .build();
+
+      return csvToBean.parse();
+    }
   }
 
 //  public AuthenticationResponse authenticate(AuthenticationRequest request) {
