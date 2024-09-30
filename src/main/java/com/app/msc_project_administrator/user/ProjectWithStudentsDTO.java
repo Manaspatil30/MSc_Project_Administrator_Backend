@@ -19,6 +19,5 @@ public class ProjectWithStudentsDTO {
     private Status status;
     private List<UserWithAnswersDTO> students;
 
-    // Constructor, getters, and setters
 }
 

@@ -27,14 +27,14 @@ public class TasterSession {
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = true)
-    private User student; // Can be null initially
+    private User student;
 
     private String meetingLink;
     private String description;
     private LocalDateTime startTime;
 
     @Enumerated(EnumType.STRING)
-    private TasterSessionStatus status; // Enum type 'AVAILABLE', 'BOOKED' // 'AVAILABLE', 'BOOKED'
+    private TasterSessionStatus status;
 
     // getters and setters
 }

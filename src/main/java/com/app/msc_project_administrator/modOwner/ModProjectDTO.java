@@ -17,5 +17,5 @@ public class ModProjectDTO {
     private String description;
     private Status status;
     private List<ModUserDTO> students;
-    private ModUserDTO assessor;// List to hold student information
+    private ModUserDTO assessor;
 }

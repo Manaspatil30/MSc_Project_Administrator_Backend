@@ -33,7 +33,6 @@ public class Session {
     private String meetingLink;
 
     @Enumerated(EnumType.STRING)
-    private SessionStatus status; // PENDING, CONFIRMED
+    private SessionStatus status;
 
-    // Getters and setters
 }

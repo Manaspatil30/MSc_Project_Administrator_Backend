@@ -13,5 +13,4 @@ public class UpdateSessionRequest {
     private String title;
     private LocalDateTime dateTime;
     private String meetingLink;
-    // Getters and setters
 }

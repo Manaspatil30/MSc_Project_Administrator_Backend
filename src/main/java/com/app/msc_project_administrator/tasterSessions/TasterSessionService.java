@@ -26,7 +26,7 @@ public class TasterSessionService {
     }
 
     public void createTasterSession(Long supervisorId, Long studentId, String meetingLink, String description, LocalDateTime startTime) {
-        // Validate the taster session request first
+        // Validate the taster session request
         TasterSessionRequest request = tasterSessionRequestRepository
                 .findByStudentUserId(studentId)
                 .stream()
@@ -34,7 +34,7 @@ public class TasterSessionService {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Taster session request not found"));
 
-        // Create the actual taster session
+        // Create the taster session
         TasterSession session = new TasterSession();
         session.setSupervisor(new User(supervisorId));
         session.setStudent(new User(studentId));

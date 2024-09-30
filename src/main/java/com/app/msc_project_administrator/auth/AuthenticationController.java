@@ -46,14 +46,4 @@ public class AuthenticationController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthenticationResponse(ex.getLocalizedMessage(), null));
     }
   }
-
-//  @PostMapping("/refresh-token")
-//  public void refreshToken(
-//      HttpServletRequest request,
-//      HttpServletResponse response
-//  ) throws IOException {
-//    service.refreshToken(request, response);
-//  }
-
-
 }

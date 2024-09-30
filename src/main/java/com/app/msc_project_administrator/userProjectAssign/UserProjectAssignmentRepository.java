@@ -14,7 +14,6 @@ public interface UserProjectAssignmentRepository extends JpaRepository<UserProje
     Optional<UserProjectAssignment> findByUser_UserId(Long userId);
 
     Optional<UserProjectAssignment> findByUser(User user);
-//    Optional<UserProjectAssignment> findByUserIdAndProjectId(Long userId, Long projectId);
 
     @Query("SELECT a FROM UserProjectAssignment a WHERE a.project.supervisor.userId = :supervisorId")
     List<UserProjectAssignment> findBySupervisorId(Long supervisorId);

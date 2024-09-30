@@ -32,7 +32,6 @@ public class ProjectAssessmentService {
 
         User supervisor = userRepository.findById(supervisorId)
                 .orElseThrow(() -> new RuntimeException("Supervisor not found"));
-        // Check if the user is a supervisor (ACADEMIC role)
         if (!supervisor.getRole().equals(Role.ACADEMIC)) {
             throw new RuntimeException("The assigned user is not a supervisor.");
         }

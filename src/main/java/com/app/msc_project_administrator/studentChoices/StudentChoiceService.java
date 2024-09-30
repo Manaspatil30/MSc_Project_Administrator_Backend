@@ -48,7 +48,6 @@ public class StudentChoiceService {
             choice.setStudent(student);
         }
 
-        // Fetch the projects and set preferences
         List<Project> projects = new ArrayList<>();
         List<Integer> preferences = new ArrayList<>();
 
@@ -255,7 +254,7 @@ public class StudentChoiceService {
                 })
                 .collect(Collectors.toList());
 
-        // Prepare the response with projects and preferences combined
+        // response with projects and preferences combined
         List<Map<String, Object>> choicesWithPreferences = studentChoices.stream()
                 .map(choice -> {
                     Map<String, Object> choiceMap = new HashMap<>();
@@ -289,22 +288,6 @@ public class StudentChoiceService {
 
         return response;
     }
-
-//    public List<UserDTO> getStudentsForSupervisor(Long supervisorId) {
-//        // Fetch projects by supervisor
-//        List<Project> supervisorProjects = projectRepository.findAllBySupervisorUserId(supervisorId);
-//
-//        // Get students who chose these projects
-//        List<User> students = new ArrayList<>();
-//        for (Project project : supervisorProjects) {
-//            List<StudentChoice> choices = studentChoiceRepository.findByProjectsProjectId(project.getProjectId());
-//            for (StudentChoice choice : choices) {
-//                students.add(choice.getStudent());
-//            }
-//        }
-//
-//        return students;
-//    }
 
 
 }

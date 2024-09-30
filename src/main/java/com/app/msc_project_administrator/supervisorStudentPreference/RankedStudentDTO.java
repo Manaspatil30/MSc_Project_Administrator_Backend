@@ -13,6 +13,4 @@ public class RankedStudentDTO {
     private String lastname;
     private String email;
     private int preference;
-
-    // Constructor, Getters, and Setters
 }

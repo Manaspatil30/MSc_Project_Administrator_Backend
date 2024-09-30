@@ -28,5 +28,5 @@ public class SupervisorStudentPreference {
     @ManyToOne
     private Project project;
 
-    private int preference; // Ranking: 1 for highest preference, etc.
+    private int preference;
 }

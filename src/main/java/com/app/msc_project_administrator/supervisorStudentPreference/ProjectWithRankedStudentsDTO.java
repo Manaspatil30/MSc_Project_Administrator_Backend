@@ -13,6 +13,4 @@ public class ProjectWithRankedStudentsDTO {
     private Integer projectId;
     private String projectTitle;
     private List<RankedStudentDTO> rankedStudents;
-
-    // Getters and Setters
 }

@@ -24,7 +24,7 @@ public class ProjectAssessment {
 
     @ManyToOne
     @JoinColumn(name = "supervisor_id")
-    private User assessor;  // Supervisor who will assess this project
+    private User assessor;
 
-    private String status; // e.g., "Pending", "Completed"
+    private String status;
 }

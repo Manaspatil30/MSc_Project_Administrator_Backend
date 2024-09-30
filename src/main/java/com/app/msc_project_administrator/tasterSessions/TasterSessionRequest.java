@@ -31,7 +31,6 @@ public class TasterSessionRequest {
     @JoinColumn(name = "supervisor_id")
     private User supervisor;
 
-    private TasterSessionStatus status; // 'PENDING', 'APPROVED', 'REJECTED'
+    private TasterSessionStatus status;
 
-    // getters and setters
 }

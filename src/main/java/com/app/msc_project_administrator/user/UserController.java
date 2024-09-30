@@ -23,14 +23,6 @@ public class UserController {
     private final UserService service;
     private final SupervisorStudentPreferenceService supervisorStudentPreferenceService;
     private final StudentChoiceService studentChoiceService;
-    @PatchMapping
-    public ResponseEntity<?> changePassword(
-          @RequestBody ChangePasswordRequest request,
-          Principal connectedUser
-    ) {
-        service.changePassword(request, connectedUser);
-        return ResponseEntity.ok().build();
-    }
 
    @GetMapping
     public ResponseEntity<List<User>> getAllUsers(){
@@ -54,11 +46,6 @@ public class UserController {
         return  ResponseEntity.ok(service.getAllSupervisors(role));
    }
 
-//    @GetMapping("/supervisor/{supervisorId}/students")
-//    public ResponseEntity<List<UserDTO>> getStudentsBySupervisor(@PathVariable Long supervisorId) {
-//        List<UserDTO> students = service.getStudentsBySupervisor(supervisorId);
-//        return ResponseEntity.ok(students);
-//    }
 
     @GetMapping("/{supervisorId}/students")
     public List<UserDTO> getStudentsAndAssignedProjects(@PathVariable Long supervisorId) {

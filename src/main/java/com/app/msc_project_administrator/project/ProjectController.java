@@ -36,14 +36,9 @@ public class ProjectController {
         } catch (RuntimeException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-//        service.save(request);
-//        return ResponseEntity.accepted().build();
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<ProjectDTO>> getAllProjects(){
-//        return ResponseEntity.ok(service.findAll());
-//    }
+
 
     @GetMapping
     public ResponseEntity<List<ProjectDTO>> getAllProjects() {
@@ -53,7 +48,6 @@ public class ProjectController {
 
     @GetMapping("/supervisor/{supervisorId}/projects")
     public ResponseEntity<List<ProjectDTO>> getProjectsForSupervisor(@PathVariable Long supervisorId) {
-        // Call the service to get the projects
         List<ProjectDTO> projects = service.getProjectsForSupervisor(supervisorId);
         return ResponseEntity.ok(projects);
     }

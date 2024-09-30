@@ -11,7 +11,6 @@ import java.util.Optional;
 public interface StudentChoiceRepository extends JpaRepository<StudentChoice, Long> {
     StudentChoice findByStudent(User student);
 
-//    @Query("SELECT sc FROM StudentChoice sc WHERE sc.student.userId = :studentId")
     Optional<StudentChoice> findByStudentUserId(Long studentId);
 
     List<StudentChoice>  findByProjectsProjectId(Integer projectId);

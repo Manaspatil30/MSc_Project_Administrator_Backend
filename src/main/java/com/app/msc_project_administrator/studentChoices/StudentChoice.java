@@ -40,7 +40,7 @@ public class StudentChoice {
     private List<Integer> preferences;
 
     @OneToMany(mappedBy = "studentChoice", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Answer> answers; // Relationship with Answer
+    private List<Answer> answers;
 
     @PrePersist
     @PreUpdate

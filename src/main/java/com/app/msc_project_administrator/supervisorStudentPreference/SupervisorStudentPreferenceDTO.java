@@ -10,6 +10,4 @@ import lombok.NoArgsConstructor;
 public class SupervisorStudentPreferenceDTO {
     private Long studentId;
     private int preference;
-
-    // Getters and setters
 }
